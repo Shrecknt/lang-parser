@@ -2,5 +2,7 @@
 
 set/int int_a 5
 cast/int/str str_a int_a
-print/var str_a
+print/var "str_a"
 print/str this is a test
+
+test/math $"a + b / 2"
