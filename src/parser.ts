@@ -94,6 +94,14 @@ export class Parser {
     }
 
     @Parser.DecorateEnsureStringHasContent
+    @Parser.DecorateShiftContent
+    static nextChar(content: MutableString): string {
+        let out = content.content.split(" ")[0];
+        if (out.length !== 1) throw new Error("Value is not of type char");
+        return out;
+    }
+
+    @Parser.DecorateEnsureStringHasContent
     static nextString(content: MutableString): string {
         if (!content.content.startsWith("\"")) throw new Error("Value is not of type string");
         let out = "";
