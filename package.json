@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "infix-postfix": "^3.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.13.0"
+  }
+}
