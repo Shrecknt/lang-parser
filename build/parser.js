@@ -80,6 +80,12 @@ class Parser {
         let out = content.content.split(" ")[0];
         return out;
     }
+    static nextChar(content) {
+        let out = content.content.split(" ")[0];
+        if (out.length !== 1)
+            throw new Error("Value is not of type char");
+        return out;
+    }
     static nextString(content) {
         if (!content.content.startsWith("\""))
             throw new Error("Value is not of type string");
@@ -130,6 +136,10 @@ __decorate([
     Parser.DecorateEnsureStringHasContent,
     Parser.DecorateShiftContent
 ], Parser, "nextWord", null);
+__decorate([
+    Parser.DecorateEnsureStringHasContent,
+    Parser.DecorateShiftContent
+], Parser, "nextChar", null);
 __decorate([
     Parser.DecorateEnsureStringHasContent
 ], Parser, "nextString", null);
