@@ -2,14 +2,28 @@ import infixToPostfix from "infix-postfix";
 import { MutableString, Parser } from "./parser";
 import fs from "fs";
 
+let debug = false;
+
 const commands = require("../commands.json");
 const testProgram = fs.readFileSync("./test_program").toString().split("\n");
 
-function parseCommand(command: string, content: MutableString): any[] {
+type CommandParam<T> = {
+    name: string,
+    value: T
+};
+
+type Command = {
+    command: string,
+    line: number,
+    params: CommandParam<any>[]
+};
+
+function parseCommand(command: string, content: MutableString): CommandParam<any>[] {
+    if (commands[command] === undefined) throw new Error(`Unknown command '${command}'`);
     let commandArgs = commands[command] as {type: string, name: string}[];
-    let out: {name: string, value: any}[] = [];
+    let out: CommandParam<any>[] = [];
     for (let i of commandArgs) {
-        let push: {name: string, value: any} = {name: i.name, value: undefined};
+        let push: CommandParam<any> = {name: i.name, value: undefined};
         switch (i.type) {
             case "bool": push.value = Parser.nextBool(content); break;
             case "char": push.value = Parser.nextChar(content); break;
@@ -25,29 +39,35 @@ function parseCommand(command: string, content: MutableString): any[] {
     return out;
 }
 
+let ast: Command[] = [];
 for (let _lineNum in testProgram) {
     let lineNum = Number(_lineNum);
     let line = testProgram[lineNum];
     let str = new MutableString(line).save();
 
-    console.log(`Line ${lineNum + 1}: ${line}`);
+    if (debug) console.log(`Line ${lineNum + 1}: ${line}`);
 
     if (str.content.trim() === "") {
-        console.log("Blank line");
+        if (debug) console.log("Blank line");
         continue;
     }
 
     let command = Parser.nextWord(str);
-    console.log(`Command: ${command}`);
+    if (debug) console.log(`Command: ${command}`);
 
     if (command === "#") {
-        console.log(`Comment | ${Parser.allRemaining(str)}`);
+        if (debug) console.log(`Comment | ${Parser.allRemaining(str)}`);
         continue;
     }
 
     let out = parseCommand(command, str);
-    console.log(out);
+    if (debug) console.log(out);
+    ast.push({command: command, line: lineNum + 1, params: out});
 }
+
+console.log("AST:", ast);
+
+fs.writeFileSync("ast.json", JSON.stringify(ast));
 
 //console.log(infixToPostfix("a+b").toString().split(" "));
 
