@@ -1,3 +1,7 @@
+import infixToPostfix from "infix-postfix";
+
+export type Expression = string[];
+
 export class MutableString {
     private _content = "";
     private storeContent = "";
@@ -90,6 +94,7 @@ export class Parser {
     @Parser.DecorateShiftContent
     static nextWord(content: MutableString): string {
         let out = content.content.split(" ")[0];
+        if (out.startsWith("\"") && out.endsWith("\"")) out = out.substring(1, out.length - 1);
         return out;
     }
 
@@ -122,6 +127,15 @@ export class Parser {
         if (found === false) throw new Error("Closing parenthesis not found");
         content.setContent(content.content.replace(`"${out}"`, ""));
         if (content.content.startsWith(" ")) content.setContent(content.content.replace(" ", ""));
+        return out;
+    }
+
+    @Parser.DecorateEnsureStringHasContent
+    static nextExpression(content: MutableString): Expression {
+        if (!content.content.startsWith("$\"")) throw new Error("Value is not of type expression");
+        content.setContent(content.content.slice(1));
+        let str = Parser.nextString(content);
+        let out: Expression = infixToPostfix(str).toString().split(" ");
         return out;
     }
 
