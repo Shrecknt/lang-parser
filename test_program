@@ -1,0 +1,5 @@
+# just a comment
+
+set/int int_a 5
+cast/int/str str_a int_a
+print str_a
