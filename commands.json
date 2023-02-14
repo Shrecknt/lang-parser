@@ -1,0 +1,28 @@
+{
+    "set/int": [
+        {
+            "type": "word",
+            "name": "var"
+        },
+        {
+            "type": "int",
+            "name": "value"
+        }
+    ],
+    "cast/int/str": [
+        {
+            "type": "word",
+            "name": "var"
+        },
+        {
+            "type": "word",
+            "name": "sourcevar"
+        }
+    ],
+    "print": [
+        {
+            "type": "word",
+            "name": "var"
+        }
+    ]
+}
