@@ -4,5 +4,10 @@
   },
   "devDependencies": {
     "@types/node": "^18.13.0"
+  },
+  "scripts": {
+    "prepare": "tsc",
+    "test": "tsc --watch",
+    "run": "node build/index.js"
   }
 }
