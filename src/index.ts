@@ -1,11 +1,9 @@
 import fs from "fs";
-
-import { parseProgram } from "./ast";
-
+import * as AST from "./ast";
 
 const testProgram: string = fs.readFileSync("./test_program").toString();
 
-let ast = parseProgram(testProgram);
+let ast = AST.parseProgram(testProgram);
 
 console.log("AST:", ast);
 

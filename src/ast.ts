@@ -1,4 +1,4 @@
-import { Expression, MutableString, Parser } from "./parser";
+import * as Parser from "./parser";
 import fs from "fs";
 import path from "path";
 
@@ -7,7 +7,7 @@ if (!fs.existsSync(path.join(__dirname, commandsPath))) commandsPath = "./comman
 if (!fs.existsSync(path.join(__dirname, commandsPath))) throw new Error("Could not find commands.json or build/commands.js");
 const commands: {[key: string]: {type: string, name: string}[]} = require(commandsPath);
 
-export type CommandParamValue = number | string | boolean | Expression;
+export type CommandParamValue = number | string | boolean | Parser.Expression;
 export type CommandParam<T extends CommandParamValue> = {
     name: string,
     value: T
@@ -19,21 +19,21 @@ export type Command = {
 };
 
 
-function parseCommand(command: string, content: MutableString): CommandParam<CommandParamValue>[] {
+function parseCommand(command: string, content: Parser.MutableString): CommandParam<CommandParamValue>[] {
     if (commands[command] === undefined) throw new Error(`Unknown command '${command}'`);
     let commandArgs = commands[command] as {type: string, name: string}[];
     let out: CommandParam<CommandParamValue>[] = [];
     for (let i of commandArgs) {
         let push: CommandParam<CommandParamValue> = {name: i.name, value: 0};
         switch (i.type) {
-            case "bool": push.value = Parser.nextBool(content); break;
-            case "char": push.value = Parser.nextChar(content); break;
-            case "float": push.value = Parser.nextFloat(content); break;
-            case "int": push.value = Parser.nextInt(content); break;
-            case "string": push.value = Parser.nextString(content); break;
-            case "word": push.value = Parser.nextWord(content); break;
-            case "expression": push.value = Parser.nextExpression(content); break;
-            case "remaining": push.value = Parser.allRemaining(content); break;
+            case "bool": push.value = Parser.Parser.nextBool(content); break;
+            case "char": push.value = Parser.Parser.nextChar(content); break;
+            case "float": push.value = Parser.Parser.nextFloat(content); break;
+            case "int": push.value = Parser.Parser.nextInt(content); break;
+            case "string": push.value = Parser.Parser.nextString(content); break;
+            case "word": push.value = Parser.Parser.nextWord(content); break;
+            case "expression": push.value = Parser.Parser.nextExpression(content); break;
+            case "remaining": push.value = Parser.Parser.allRemaining(content); break;
             default: throw new Error("Unknown type " + i.type);
         }
         out.push(push);
@@ -47,7 +47,7 @@ function parseProgram(_inputProgram: string | string[], debug: boolean = false) 
     for (let _lineNum in inputProgram) {
         let lineNum: number = parseInt(_lineNum, 10);
         let line: string = inputProgram[lineNum];
-        let str: MutableString = new MutableString(line).save();
+        let str: Parser.MutableString = new Parser.MutableString(line).save();
 
         if (debug) console.log(`Line ${lineNum + 1}: ${line}`);
 
@@ -56,11 +56,11 @@ function parseProgram(_inputProgram: string | string[], debug: boolean = false) 
             continue;
         }
 
-        let command: string = Parser.nextWord(str);
+        let command: string = Parser.Parser.nextWord(str);
         if (debug) console.log(`Command: ${command}`);
 
         if (command === "#") {
-            if (debug) console.log(`Comment | ${Parser.allRemaining(str)}`);
+            if (debug) console.log(`Comment | ${Parser.Parser.allRemaining(str)}`);
             continue;
         }
 
