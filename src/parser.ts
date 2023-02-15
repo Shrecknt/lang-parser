@@ -37,7 +37,7 @@ export class Parser {
     /* Decorators */
     
     private static DecorateEnsureStringHasContent(_target: any, _propertyKey: string, descriptor: PropertyDescriptor) {
-        let origFunction = descriptor.value;
+        const origFunction = descriptor.value;
         descriptor.value = (content: MutableString, ...args: any) => {
             if (content.content === "") throw new Error("String is empty");
             return origFunction(content, ...args);
@@ -45,9 +45,9 @@ export class Parser {
     }
 
     private static DecorateShiftContent(_target: any, _propertyKey: string, descriptor: PropertyDescriptor) {
-        let origFunction = descriptor.value;
+        const origFunction = descriptor.value;
         descriptor.value = (content: MutableString, ...args: any) => {
-            let out = origFunction(content, ...args);
+            const out = origFunction(content, ...args);
             Parser.shift(content);
             return out;
         };
@@ -68,7 +68,7 @@ export class Parser {
     @Parser.DecorateEnsureStringHasContent
     @Parser.DecorateShiftContent
     static nextInt(content: MutableString, radix: number = 10): number {
-        let out = parseInt(content.content.split(" ")[0], radix);
+        const out = parseInt(content.content.split(" ")[0], radix);
         if (Number.isNaN(out)) throw new Error("Value is not of type int");
         return out;
     }
@@ -76,7 +76,7 @@ export class Parser {
     @Parser.DecorateEnsureStringHasContent
     @Parser.DecorateShiftContent
     static nextFloat(content: MutableString): number {
-        let out = parseFloat(content.content.split(" ")[0]);
+        const out = parseFloat(content.content.split(" ")[0]);
         if (Number.isNaN(out)) throw new Error("Value is not of type float");
         return out;
     }
@@ -84,8 +84,8 @@ export class Parser {
     @Parser.DecorateEnsureStringHasContent
     @Parser.DecorateShiftContent
     static nextBool(content: MutableString): boolean {
-        let outStr = content.content.split(" ")[0].toLowerCase();
-        let out = (["true", "t", "1"].includes(outStr)) ? true : ((["false", "f", "0"].includes(outStr)) ? false : null);
+        const outStr = content.content.split(" ")[0].toLowerCase();
+        const out = (["true", "t", "1"].includes(outStr)) ? true : ((["false", "f", "0"].includes(outStr)) ? false : null);
         if (out === null) throw new Error("Value is not of type bool");
         return out;
     }
@@ -101,7 +101,7 @@ export class Parser {
     @Parser.DecorateEnsureStringHasContent
     @Parser.DecorateShiftContent
     static nextChar(content: MutableString): string {
-        let out = content.content.split(" ")[0];
+        const out = content.content.split(" ")[0];
         if (out.length !== 1) throw new Error("Value is not of type char");
         return out;
     }
@@ -134,13 +134,13 @@ export class Parser {
     static nextExpression(content: MutableString): Expression {
         if (!content.content.startsWith("$\"")) throw new Error("Value is not of type expression");
         content.setContent(content.content.slice(1));
-        let str = Parser.nextString(content);
-        let out: Expression = infixToPostfix(str).toString().split(" ");
+        const str: string = Parser.nextString(content);
+        const out: Expression = infixToPostfix(str).toString().split(" ");
         return out;
     }
 
     static allRemaining(str: MutableString): string {
-        let out = str.content;
+        const out = str.content;
         str.setContent("");
         return out;
     }

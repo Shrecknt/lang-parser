@@ -22,12 +22,12 @@ export type Command = {
 
 function parseCommand(command: string, content: Parser.MutableString): CommandParam<CommandParamValue>[] {
     if (commands[command] === undefined) throw new Error(`Unknown command '${command}'`);
-    let commandArgs = commands[command] as {type: string, name: string}[];
-    let out: CommandParam<CommandParamValue>[] = [];
-    for (let i of commandArgs) {
+    const commandArgs = commands[command] as {type: string, name: string}[];
+    const out: CommandParam<CommandParamValue>[] = [];
+    for (const i of commandArgs) {
         let outType = i.type;
         if (outType === "remaining" || outType === "word" || outType === "char") outType = "string";
-        let push: CommandParam<CommandParamValue> = {name: i.name, type: outType, value: 0};
+        const push: CommandParam<CommandParamValue> = {name: i.name, type: outType, value: 0};
         switch (i.type) {
             case "bool": push.value = Parser.Parser.nextBool(content); break;
             case "char": push.value = Parser.Parser.nextChar(content); break;
@@ -45,12 +45,12 @@ function parseCommand(command: string, content: Parser.MutableString): CommandPa
 }
 
 function parseProgram(_inputProgram: string | string[], debug: boolean = false) {
-    let inputProgram = (typeof _inputProgram === "string") ? _inputProgram.replace(/\r/g, "").split(/\n/g) : _inputProgram;
-    let ast: Command[] = [];
-    for (let _lineNum in inputProgram) {
-        let lineNum: number = parseInt(_lineNum, 10);
-        let line: string = inputProgram[lineNum];
-        let str: Parser.MutableString = new Parser.MutableString(line).save();
+    const inputProgram = (typeof _inputProgram === "string") ? _inputProgram.replace(/\r/g, "").split(/\n/g) : _inputProgram;
+    const ast: Command[] = [];
+    for (const _lineNum in inputProgram) {
+        const lineNum: number = parseInt(_lineNum, 10);
+        const line: string = inputProgram[lineNum];
+        const str: Parser.MutableString = new Parser.MutableString(line).save();
 
         if (debug) console.log(`Line ${lineNum + 1}: ${line}`);
 
@@ -59,7 +59,7 @@ function parseProgram(_inputProgram: string | string[], debug: boolean = false) 
             continue;
         }
 
-        let command: string = Parser.Parser.nextWord(str);
+        const command: string = Parser.Parser.nextWord(str);
         if (debug) console.log(`Command: ${command}`);
 
         if (command === "#") {
@@ -67,7 +67,7 @@ function parseProgram(_inputProgram: string | string[], debug: boolean = false) 
             continue;
         }
 
-        let out: CommandParam<CommandParamValue>[] = parseCommand(command, str);
+        const out: CommandParam<CommandParamValue>[] = parseCommand(command, str);
         if (debug) console.log(out);
         ast.push({command: command, line: lineNum + 1, params: out});
     }

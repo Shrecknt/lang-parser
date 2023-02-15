@@ -3,7 +3,7 @@ import * as AST from "./ast";
 
 const testProgram: string = fs.readFileSync("./test_program").toString();
 
-let ast = AST.parseProgram(testProgram);
+const ast = AST.parseProgram(testProgram);
 
 console.log("AST:", ast);
 
