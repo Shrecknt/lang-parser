@@ -10,6 +10,7 @@ const commands: {[key: string]: {type: string, name: string}[]} = require(comman
 export type CommandParamValue = number | string | boolean | Parser.Expression;
 export type CommandParam<T extends CommandParamValue> = {
     name: string,
+    type: string
     value: T
 };
 export type Command = {
@@ -24,7 +25,9 @@ function parseCommand(command: string, content: Parser.MutableString): CommandPa
     let commandArgs = commands[command] as {type: string, name: string}[];
     let out: CommandParam<CommandParamValue>[] = [];
     for (let i of commandArgs) {
-        let push: CommandParam<CommandParamValue> = {name: i.name, value: 0};
+        let outType = i.type;
+        if (outType === "remaining" || outType === "word" || outType === "char") outType = "string";
+        let push: CommandParam<CommandParamValue> = {name: i.name, type: outType, value: 0};
         switch (i.type) {
             case "bool": push.value = Parser.Parser.nextBool(content); break;
             case "char": push.value = Parser.Parser.nextChar(content); break;
