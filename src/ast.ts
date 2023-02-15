@@ -1,7 +1,11 @@
 import { Expression, MutableString, Parser } from "./parser";
 import fs from "fs";
+import path from "path";
 
-const commands: {[key: string]: {type: string, name: string}[]} = require("../commands.json");
+let commandsPath = "../commands.json";
+if (!fs.existsSync(path.join(__dirname, commandsPath))) commandsPath = "./commands.js";
+if (!fs.existsSync(path.join(__dirname, commandsPath))) throw new Error("Could not find commands.json or build/commands.js");
+const commands: {[key: string]: {type: string, name: string}[]} = require(commandsPath);
 
 export type CommandParamValue = number | string | boolean | Expression;
 export type CommandParam<T extends CommandParamValue> = {
