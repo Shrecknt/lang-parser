@@ -1,4 +1,4 @@
-{
+module.exports = {
     "set/int": [
         { "type": "word", "name": "var" },
         { "type": "int", "name": "value" }
@@ -20,4 +20,4 @@
     "test/math": [
         { "type": "expression", "name": "test" }
     ]
-}
+};
