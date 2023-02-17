@@ -9,14 +9,14 @@ const commands: {[key: string]: {type: string, name: string}[]} = require(comman
 
 export type CommandParamValue = number | string | boolean | Parser.Expression;
 export type CommandParam<T extends CommandParamValue> = {
-    name: string,
-    type: string
-    value: T
+    name: string;
+    type: string;
+    value: T;
 };
 export type Command = {
-    command: string,
-    line: number,
-    params: CommandParam<CommandParamValue>[]
+    command: string;
+    line: number;
+    params: CommandParam<CommandParamValue>[];
 };
 
 
