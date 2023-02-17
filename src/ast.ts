@@ -17,6 +17,7 @@ export type Command = {
     command: string;
     line: number;
     params: CommandParam<CommandParamValue>[];
+    error?: ParseCommandError;
 };
 
 class ParseCommandError {
@@ -85,7 +86,7 @@ function parseProgram(_inputProgram: string | string[], debug: boolean = false) 
         const _out: CommandParam<CommandParamValue>[] | ParseCommandError = parseCommand(command, str);
         if (_out instanceof ParseCommandError) {
             console.log(`Error in '${line}' (argument ${_out.argument + 2}) (line ${lineNum + 1})\n          ^^^ ${_out.reason}`);
-            ast.push({command: command, line: lineNum + 1, params: []});
+            ast.push({command: command, line: lineNum + 1, params: [], error: _out});
         } else {
             const out = _out as CommandParam<CommandParamValue>[];
             if (debug) console.log(out);
