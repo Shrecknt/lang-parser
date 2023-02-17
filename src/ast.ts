@@ -19,25 +19,40 @@ export type Command = {
     params: CommandParam<CommandParamValue>[];
 };
 
+class ParseCommandError {
+    reason: string;
+    argument: number;
 
-function parseCommand(command: string, content: Parser.MutableString): CommandParam<CommandParamValue>[] {
+    constructor (reason: string, argument: number) {
+        this.reason = reason;
+        this.argument = argument;
+    }
+}
+
+function parseCommand(command: string, content: Parser.MutableString): CommandParam<CommandParamValue>[] | ParseCommandError {
     if (commands[command] === undefined) throw new Error(`Unknown command '${command}'`);
     const commandArgs = commands[command] as {type: string, name: string}[];
     const out: CommandParam<CommandParamValue>[] = [];
-    for (const i of commandArgs) {
+    for (const _i in commandArgs) {
+        const i = commandArgs[_i];
         let outType = i.type;
         if (outType === "remaining" || outType === "word" || outType === "char") outType = "string";
         const push: CommandParam<CommandParamValue> = {name: i.name, type: outType, value: 0};
-        switch (i.type) {
-            case "bool": push.value = Parser.Parser.nextBool(content); break;
-            case "char": push.value = Parser.Parser.nextChar(content); break;
-            case "float": push.value = Parser.Parser.nextFloat(content); break;
-            case "int": push.value = Parser.Parser.nextInt(content); break;
-            case "string": push.value = Parser.Parser.nextString(content); break;
-            case "word": push.value = Parser.Parser.nextWord(content); break;
-            case "expression": push.value = Parser.Parser.nextExpression(content); break;
-            case "remaining": push.value = Parser.Parser.allRemaining(content); break;
-            default: throw new Error("Unknown type " + i.type);
+        try {
+            switch (i.type) {
+                case "bool": push.value = Parser.Parser.nextBool(content); break;
+                case "char": push.value = Parser.Parser.nextChar(content); break;
+                case "float": push.value = Parser.Parser.nextFloat(content); break;
+                case "int": push.value = Parser.Parser.nextInt(content); break;
+                case "string": push.value = Parser.Parser.nextString(content); break;
+                case "word": push.value = Parser.Parser.nextWord(content); break;
+                case "expression": push.value = Parser.Parser.nextExpression(content); break;
+                case "remaining": push.value = Parser.Parser.allRemaining(content); break;
+                default: throw new Error("Unknown type " + i.type);
+            }
+        } catch (e) {
+            let err = e as Error;
+            return new ParseCommandError(err.message.toString(), parseInt(_i, 10));
         }
         out.push(push);
     }
@@ -67,9 +82,15 @@ function parseProgram(_inputProgram: string | string[], debug: boolean = false) 
             continue;
         }
 
-        const out: CommandParam<CommandParamValue>[] = parseCommand(command, str);
-        if (debug) console.log(out);
-        ast.push({command: command, line: lineNum + 1, params: out});
+        const _out: CommandParam<CommandParamValue>[] | ParseCommandError = parseCommand(command, str);
+        if (_out instanceof ParseCommandError) {
+            console.log(`Error in '${line}' (argument ${_out.argument + 2}) (line ${lineNum + 1})\n          ^^^ ${_out.reason}`);
+            ast.push({command: command, line: lineNum + 1, params: []});
+        } else {
+            const out = _out as CommandParam<CommandParamValue>[];
+            if (debug) console.log(out);
+            ast.push({command: command, line: lineNum + 1, params: out});
+        }
     }
     return ast;
 }

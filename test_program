@@ -5,4 +5,6 @@ cast/int/str str_a int_a
 print/var "str_a"
 print/str this is a test
 
+print/var
+
 test/math $"a + b / 2"
